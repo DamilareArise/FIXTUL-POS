@@ -1,52 +1,22 @@
 const express = require('express')
 const router = express.Router()
 const invoiceModel = require('../models/invoice.model')
+const { fixInvoice, fixHistory, invoicePage, homePage } = require('../controllers/invoice.controller')
+const { addProduct, addSalesInvoice, salesin, salesHistory, invoiceDetails } = require('../controllers/salesInvoice.controller')
 
 
-router.get('/fixinvo',(req, res)=>{
-    res.render('fixinvo',{saved:true})
-})
+router.get('/fixinvo', invoicePage)
+router.post('/fix-invoice', fixInvoice)
+router.get('/fixhistory', fixHistory)
+router.get('/', homePage)
+router.post('/add-product', addProduct)
+router.post('/add-sales-invoice', addSalesInvoice)
+router.get('/salesin', salesin)
+router.get('/saleshistory', salesHistory)
+router.get('/invoicedetail/:invoiceId', invoiceDetails)
 
-router.post('/fix-invoice', (req, res)=>{
-    invoiceInfo = req.body;
-    let form = new invoiceModel(invoiceInfo)
-    form.save()
-    .then(()=>{
-        console.log('Invoice saved')
-        res.redirect('fixhistory')
-    })
-    .catch((err)=>{
-        console.log(err,'Invoice not saved')
-        res.render('fixinvo', {saved: false})
-    })
-})
 
-router.get('/',(req, res)=>{
-    res.render('invoice')
-})
-
-router.get('/fixhistory',(req, res)=>{
-    invoiceModel.find()
-    .then((invoices)=>{
-        console.log(invoices);
-        
-        res.render('fixhistory',{invoices:invoices})
-    })
-})
-
-router.get('/invoicedetail',(req, res)=>{
-    res.render('invoicedetail')
-})
-
-router.get('/salesin',(req, res)=>{
-    res.render('salesin')
-})
-
-router.get('/saleshistory',(req, res)=>{
-    res.render('saleshistory')
-})
-
-router.get('/reciept',(req, res)=>{
+router.get('/reciept', (req, res) => {
     res.render('reciept')
 })
 

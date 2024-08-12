@@ -40,48 +40,31 @@
                     </tr>
                   </thead>
                   <tbody id="tableBody">
-                    <tr>
-                      <th scope="row">1</th>
-                      <td>Mark</td>
-                      <td>₦ 60,000</td>
-                      <td>October 9 2023</td>
-                      <td><a href="/Invoicedetail">Iphone  7...</a> </td>
-                    </tr>
-                    <tr>
-                      <th scope="row">2</th>
-                      <td>Mark</td>
-                      <td>₦ 70,000</td>
-                      <td>October 9 2023</td>
-                      <td><a href="/Invoicedetail">Iphone 12 Pro ...</a> </td>
-                    </tr>
-                    <tr>
-                      <th scope="row">3</th>
-                      <td>Mark</td>
-                      <td>₦ 600,000</td>
-                      <td>October 9 2023</td>
-                      <td><a href="/Invoicedetail">Macbook Pro...</a> </td>
-                    </tr>
-                    <tr>
-                      <th scope="row">3</th>
-                      <td>CHIOMA EBUBE</td>
-                      <td>₦ 600,000</td>
-                      <td>October 9 2023</td>
-                      <td><a href="/Invoicedetail">Hp Laptop ...</a> </td>
-                    </tr>
-                    <tr>
-                      <th scope="row">3</th>
-                      <td>TOPE AKINBODE</td>
-                      <td>₦ 600,000</td>
-                      <td>October 9 2023</td>
-                      <td><a href="/Invoicedetail">Dell Laptop ...</a> </td>
-                    </tr>
-                    <tr>
-                      <th scope="row">3</th>
-                      <td>Mark</td>
-                      <td>₦ 600,000</td>
-                      <td>October 9 2023</td>
-                      <td><a href="/Invoicedetail">Macbook Pro 2024 ...</a> </td>
-                    </tr>  
+                    <% if (invoices && invoices.length > 0) { %>
+                      <% invoices.forEach((invoice, index) => { %>
+                        <tr>
+                          <th scope="row">
+                            <%= index + 1 %>
+                          </th>
+                          <td>
+                            <%= invoice.customer_name %>
+                          </td>
+                          <td>
+                            #<%= invoice.total_price %>
+                          </td>
+                          <td>
+                            <%= new Date(invoice.date).toLocaleString() %>
+                          </td>
+                          <td>
+                            <a href="/invoicedetail/<%= invoice._id %>">View..</a>
+                          </td>
+                        </tr>
+                      <% }) %>
+                    <% } else { %>
+                      <tr>
+                        <td colspan="5">No invoices found.</td>
+                      </tr>
+                    <% } %>
                   </tbody>
                 </table>
                         </div> <br>
