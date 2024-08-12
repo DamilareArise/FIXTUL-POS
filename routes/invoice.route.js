@@ -1,9 +1,24 @@
 const express = require('express')
 const router = express.Router()
+const invoiceModel = require('../models/invoice.model')
 
 
 router.get('/fixinvo',(req, res)=>{
-    res.render('fixinvo')
+    res.render('fixinvo',{saved:true})
+})
+
+router.post('/fix-invoice', (req, res)=>{
+    invoiceInfo = req.body;
+    let form = new invoiceModel(invoiceInfo)
+    form.save()
+    .then(()=>{
+        console.log('Invoice saved')
+        res.redirect('fixhistory')
+    })
+    .catch((err)=>{
+        console.log(err,'Invoice not saved')
+        res.render('fixinvo', {saved: false})
+    })
 })
 
 router.get('/',(req, res)=>{
@@ -11,7 +26,12 @@ router.get('/',(req, res)=>{
 })
 
 router.get('/fixhistory',(req, res)=>{
-    res.render('fixhistory')
+    invoiceModel.find()
+    .then((invoices)=>{
+        console.log(invoices);
+        
+        res.render('fixhistory',{invoices:invoices})
+    })
 })
 
 router.get('/invoicedetail',(req, res)=>{
