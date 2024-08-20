@@ -2,32 +2,47 @@ const express = require('express')
 const salesInvoiceModel = require('../models/salesInvoice.model')
 
 
-let allProduct = []
 
 const salesin = (req, res) => {
-    if (allProduct.length > 0) {
-        res.render('salesin', { p_length: allProduct.length })
+    if (!req.session.products) {
+        req.session.products = [];
     }
-    else {
-        res.render('salesin', { p_length: 0 })
-    }
-}
+    
+    const productCount = req.session.products.length;
+    res.render('salesin', { p_length: productCount });
+};
 
 
 const addProduct = (req, res) => {
     const product = req.body
-    allProduct.push(product)
+    if (!req.session.products) {
+        req.session.products = [];
+    }
+    req.session.products.push(product);
     res.redirect('salesin')
-    console.log(allProduct);
+   
+}
+
+const removeProduct = (req, res) => {
+    let id = req.params.id
+    if (req.session.products && id >= 0 && id < req.session.products.length) {
+        req.session.products.splice(id, 1);
+    }
+    res.render('productHistory', { products: req.session.products })
+}
+
+const viewProducts = (req, res) => {
+    res.render('productHistory', { products: req.session.products || [] })
 }
 
 const addSalesInvoice = (req, res) => {
     const invoice = req.body
+    const products = req.session.products || []
     const newInvoice = new salesInvoiceModel({
         customer_name: invoice.customer_name,
         customer_number: invoice.customer_number,
         attendant_name: invoice.attendant_name,
-        products: allProduct,
+        products,
     })
 
     newInvoice.total_price = newInvoice.products.reduce((total, product) => {
@@ -36,7 +51,7 @@ const addSalesInvoice = (req, res) => {
     newInvoice.save()
         .then(invoice => {
             console.log('Invoice saved:', invoice);
-            allProduct = []
+            req.session.products = [];
             res.redirect('saleshistory')
 
         })
@@ -46,12 +61,12 @@ const addSalesInvoice = (req, res) => {
         });
 }
 
-const salesHistory = (req, res)=>{
+const salesHistory = (req, res) => {
     salesInvoiceModel.find()
-    .then((invoices)=>{
-        console.log(invoices);
-        res.render('saleshistory',{invoices:invoices})
-    })
+        .then((invoices) => {
+            console.log(invoices);
+            res.render('saleshistory', { invoices: invoices })
+        })
 }
 
 const invoiceDetails = (req, res) => {
@@ -60,7 +75,7 @@ const invoiceDetails = (req, res) => {
         .then(invoice => {
             if (invoice) {
                 console.log('Customer Name:', invoice.customer_name);
-                res.render('invoicedetail', {invoice:invoice})
+                res.render('invoicedetail', { invoice: invoice })
             } else {
                 console.log('Invoice not found');
                 res.status(404).send('Invoice not found');
@@ -73,5 +88,5 @@ const invoiceDetails = (req, res) => {
 }
 
 
-module.exports = { addProduct, addSalesInvoice, salesin, salesHistory, invoiceDetails}
+module.exports = { addProduct, addSalesInvoice, salesin, salesHistory, invoiceDetails, viewProducts, removeProduct }
 

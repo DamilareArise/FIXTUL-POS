@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="/css/invoice.css">
+  <link rel="icon" href="./WHITEDLOGO.png">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <title>Sales History</title>
+
+</head>
+
+<body>
+  <div class="salesinvoice">
+    <div class="sidenv"><br>
+      <div style="display: flex;">
+        <img src="/images/PHOTO-2023-06-19-15-50-35-removebg-preview.png" height="80" alt="#companylogo">
+      </div>
+      <div class="w-t-s">
+        <img src="/images/e-commerace.png" alt="" height="200">
+      </div>
+      <div>
+        <button class="butts">Successfull Fix Transaction appears in the Fix History, click the Transaction column to
+          check Fix Details</button>
+      </div>
+      <a href="https://www.flaticon.com/free-icons/online-shopping" title="online shopping icons" class="grey">Online
+        shopping icons created by Hexagon075 - Flaticon</a>
+    </div>
+    <div class="mais">
+      <div class="logthetable">
+        <h1 class="logo"><img class="frs" src="/images/FIXTUL-LOGO.png" alt="#companylogo" height="100">
+          Fix <i>History</i></h1> <br>
+        <input type="text" id="searchInput" class="form-control mb-3" placeholder="Search for customer names...">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">S/N</th>
+              <th scope="col">Product Name</th>
+              <th scope="col">Quantity</th>
+              <th scope="col">Price</th>
+              <th scope="col">Remove</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <% if (products && products.length > 0) { %>
+              <% products.forEach((product, index) => { %>
+                <tr>
+                  <th scope="row">
+                    <%= index + 1 %>
+                  </th>
+                  <td>
+                    <%= product.name %>
+                  </td>
+                  <td>
+                    <%= product.quantity %>
+                  </td>
+                  <td>
+                    <%=product.price %>
+                  </td>
+                  <td>
+                    <a href="/remove-product/<%= index %>" class="btn btn-outline-danger ">Remove</a>
+                  </td>
+                </tr>
+              <% }) %>
+            <% } else { %>
+              <tr>
+                <td colspan="5">No Product Added</td>
+              </tr>
+            <% } %>
+          </tbody>
+        </table>
+        <div class="logs">
+            <button class="Scts"><a href="/salesin" >Back</a></button>
+            <button class="Scts"><a href="/" >Home</a></button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  </div>
+
+  </div>
+  </div>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.0.7/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="./invoice.js"></script>
+  <script>
+
+  </script>
+
+</body>
+
+</html>
