@@ -69,12 +69,12 @@ const salesHistory = (req, res) => {
 }
 
 const invoiceDetails = (req, res) => {
-    const invoiceId = req.params.invoiceId;
-    salesInvoiceModel.findById(invoiceId)
+    const id = req.params.id;
+    salesInvoiceModel.findById(id)
         .then(invoice => {
             if (invoice) {
                 console.log('Customer Name:', invoice.customer_name);
-                res.render('invoicedetail', { invoice: invoice })
+                res.render('invoice_detail', { invoice: invoice })
             } else {
                 console.log('Invoice not found');
                 res.status(404).send('Invoice not found');
