@@ -1,8 +1,8 @@
 const express = require('express')
 const router = express.Router()
 const invoiceModel = require('../models/invoice.model')
-const { fixInvoice, fixHistory, invoicePage, homePage } = require('../controllers/invoice.controller')
-const { addProduct, addSalesInvoice, salesin, salesHistory, invoiceDetails, viewProducts, removeProduct } = require('../controllers/salesInvoice.controller')
+const { fixInvoice, fixHistory, invoicePage, homePage, deleteFix } = require('../controllers/invoice.controller')
+const { addProduct, addSalesInvoice, salesin, salesHistory, invoiceDetails, viewProducts, removeProduct, deleteSalesInvoice } = require('../controllers/salesInvoice.controller')
 
 
 router.get('/fixinvo', invoicePage)
@@ -16,6 +16,8 @@ router.get('/saleshistory', salesHistory)
 router.get('/invoicedetail/:invoiceId', invoiceDetails)
 router.get('/products-history', viewProducts)
 router.get('/remove-product/:id', removeProduct)
+router.delete('/delete-fix/:id', deleteFix)
+router.delete('/delete-salesInv/:id', deleteSalesInvoice)
 
 
 router.get('/reciept', (req, res) => {

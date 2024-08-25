@@ -7,7 +7,7 @@ const salesin = (req, res) => {
     if (!req.session.products) {
         req.session.products = [];
     }
-    
+
     const productCount = req.session.products.length;
     res.render('salesin', { p_length: productCount });
 };
@@ -20,7 +20,7 @@ const addProduct = (req, res) => {
     }
     req.session.products.push(product);
     res.redirect('salesin')
-   
+
 }
 
 const removeProduct = (req, res) => {
@@ -62,9 +62,8 @@ const addSalesInvoice = (req, res) => {
 }
 
 const salesHistory = (req, res) => {
-    salesInvoiceModel.find()
+    salesInvoiceModel.find().sort({ _id: -1 }) 
         .then((invoices) => {
-            console.log(invoices);
             res.render('saleshistory', { invoices: invoices })
         })
 }
@@ -87,6 +86,23 @@ const invoiceDetails = (req, res) => {
         });
 }
 
+const deleteSalesInvoice = (req, res) => {
+    const id = req.params.id;
+    console.log(id);
+    
+    salesInvoiceModel.deleteOne({ _id: id })
+        .then((response) => {
+            if (response.deletedCount === 0) {
+                return res.status(404).json({ error: 'Invoice not found' });
+            }
+            res.status(200).json({ message: 'Invoice deleted successfully' });
+        })
+        .catch((err) => {
+            console.error('Error deleting invoice:', err);
+            res.status(500).json({ error: 'Internal server error'});
+        });
 
-module.exports = { addProduct, addSalesInvoice, salesin, salesHistory, invoiceDetails, viewProducts, removeProduct }
+}
+
+module.exports = { addProduct, addSalesInvoice, salesin, salesHistory, invoiceDetails, viewProducts, removeProduct, deleteSalesInvoice }
 
