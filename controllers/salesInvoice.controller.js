@@ -1,6 +1,6 @@
 const express = require('express')
 const salesInvoiceModel = require('../models/salesInvoice.model')
-const puppeteer = require("puppeteer");
+const puppeteer = require("puppeteer-core");
 const fs = require('fs');
 const path = require('path');
 
@@ -208,6 +208,7 @@ const printSalesInvoice = async (req, res) => {
     `
     // Launch Puppeteer
     const browser = await puppeteer.launch({
+        executablePath: '/usr/bin/chromium-browser',
         headless: true,
         args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
