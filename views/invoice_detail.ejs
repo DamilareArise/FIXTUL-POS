@@ -55,8 +55,12 @@
               <td>
                 <%= invoice.total_price %>
               </td>
-              <td><button class="btn btn-primary">Print</button></td>
               <td> 
+                <a href="/print-salesInv/<%= invoice._id %> " type="button" class="btn btn-primary text-white">
+                  Print
+                </a>
+              </td>
+              <td>
                 <a href="#" type="button" class="btn btn-danger text-white"
                   onclick="deleteInvoice('<%= invoice._id %>')">
                   Delete
