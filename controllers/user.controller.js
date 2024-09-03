@@ -37,7 +37,7 @@ const register = (req, res) =>{
     form.save()
     .then((data) => {
         // res.send({ status: true, message: 'User created successfully' })
-        res.render('signin')
+        res.redirect('/signin')
     })
     .catch((err) => {
         res.send({ status: false, message: err })

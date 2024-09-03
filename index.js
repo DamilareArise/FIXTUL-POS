@@ -17,8 +17,8 @@ app.use(session({
 app.set("view engine", "ejs")
 app.use(express.urlencoded({extended:true}))
 app.use(express.static("public"))
-app.use('/inv', invoiceRouter)
-app.use('/', userRouter)
+app.use('/', invoiceRouter)
+app.use('/user', userRouter)
 
 let URI = process.env.MONGO_DB_URI
 mongoose.connect(URI)
