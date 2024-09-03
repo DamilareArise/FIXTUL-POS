@@ -4,6 +4,7 @@ const app = express()
 const port = 3000
 const ejs = require("ejs")
 const invoiceRouter = require('./routes/invoice.route')
+const userRouter = require('./routes/user.route')
 const mongoose = require("mongoose")
 require('dotenv').config()
 
@@ -16,7 +17,8 @@ app.use(session({
 app.set("view engine", "ejs")
 app.use(express.urlencoded({extended:true}))
 app.use(express.static("public"))
-app.use('/', invoiceRouter)
+app.use('/inv', invoiceRouter)
+app.use('/', userRouter)
 
 let URI = process.env.MONGO_DB_URI
 mongoose.connect(URI)
