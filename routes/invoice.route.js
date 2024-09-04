@@ -43,4 +43,4 @@ router.get('/reciept', (req, res) => {
 })
 
 
-module.exports = router
+module.exports = router;
