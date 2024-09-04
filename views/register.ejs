@@ -9,6 +9,9 @@
 </head>
 <body>
     <div class="body2  col-8 col-md-4 m-auto mt-5 shadow-sm p-2 py-4">
+        <% if (status === false) { %>
+            <p class="alert alert-danger" role="alert"><%= message %></p>
+        <% } %>
         <div class="cart-d-logo">
             <img src="/images/FIXTUL-LOGO.png" alt="#companylogo" height="100">
         </div>

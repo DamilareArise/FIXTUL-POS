@@ -36,7 +36,7 @@ const signin = (req, res) =>{
 }
 
 const registerPage = (req, res) =>{
-    res.render('register')
+    res.render('register', { status: true, message: 'Invalid Password' })
 }
 
 const register = (req, res) =>{
@@ -48,7 +48,7 @@ const register = (req, res) =>{
         res.redirect('/user')
     })
     .catch((err) => {
-        res.send({ status: false, message: err })
+        res.render('register', {status:false, message: err })
     })
 }
 
