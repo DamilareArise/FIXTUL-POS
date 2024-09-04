@@ -48,7 +48,7 @@ const register = (req, res) =>{
         res.redirect('/user')
     })
     .catch((err) => {
-        res.render('register', {status:false, message: err })
+        res.render('register', {status:false, message: 'This email/username is already in use. Please choose a different one.' })
     })
 }
 
