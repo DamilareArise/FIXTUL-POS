@@ -7,6 +7,7 @@ const invoiceRouter = require('./routes/invoice.route')
 const userRouter = require('./routes/user.route')
 const mongoose = require("mongoose")
 require('dotenv').config()
+const jwt = require('jsonwebtoken')
 
 
 app.use(session({

@@ -1,8 +1,9 @@
 const express = require('express')
 const salesInvoiceModel = require('../models/salesInvoice.model')
-const puppeteer = require("puppeteer");
+const pdf = require('html-pdf');
 const fs = require('fs');
 const path = require('path');
+const jwt = require('jsonwebtoken')
 
 
 
@@ -108,137 +109,139 @@ const deleteSalesInvoice = (req, res) => {
 }
 
 const printSalesInvoice = async (req, res) => {
-    const id = req.params.id;
-    const invoice = await salesInvoiceModel.findById(id);
-    const htmlContent = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Invoice</title>
-            <style>
-                body {
-                    font-family: Arial, sans-serif;
-                }
-                .invoice-container {
-                    max-width: 800px;
-                    margin: 0 auto;
-                    padding: 20px;
-                    border: 1px solid #ccc;
-                    background-color: #fff;
-                    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-                }
-                .logo {
-                    max-width: 150px;
-                }
-                .company-info {
-                    margin-top: 20px;
-                }
-                .invoice-info {
-                    margin-top: 30px;
-                    text-align: right;
-                }
-                .customer-info {
-                    margin-top: 30px;
-                }
-                .table-container {
-                    margin-top: 30px;
-                }
-                table {
-                    width: 100%;
-                    border-collapse: collapse;
-                }
-                th, td {
-                    border: 1px solid #ccc;
-                    padding: 8px;
-                    text-align: left;
-                }
-                th {
-                    background-color: #f2f2f2;
-                }
-                .total {
-                    margin-top: 20px;
-                    text-align: right;
-                }
-            </style>
-        </head>
-        <body>
-            <div class="invoice-container">
-                <div class="logo">
-                    <img src="https://res.cloudinary.com/dtmhv0qae/image/upload/v1724723865/FIXTUL-LOGO_p5k75k.png" alt="Company Logo" height="100">
-                </div>
-                <div class="company-info">
-                    <p>Fixtul Nigeria</p>
-                    <p>Alari Akata Complex, <br> Facebook, Under G, <br>210214, Lautech, Ogbomoso, Oyo State</p>
-                </div>
-                <div class="invoice-info">
-                    <p><b>Invoice #:</b> ${invoice._id}</p>
-                    <p><b>Date:</b> ${new Date(invoice.date).toLocaleString()}</p>
-                </div>
-                <div class="customer-info">
-                    <p><b>Customer Name:</b> ${invoice.customer_name}</p>
-                </div>
-                <div class="table-container">
-                    <table>
-                        <tr>
-                            <th scope="col">Product</th>
-                            <th scope="col">Amount</th>
-                            <th scope="col">Quantity</th>
-                        </tr>
-                        ${
-                            invoice.products.map((element)=>(
-                            `
-                            <tr>
-                                <td>${element.name}</td>
-                                <td>${element.price}</td>
-                                <td>${element.quantity}</td>
-                            </tr>
-                            `
-                            ))   
-                        }
-                    
-                    </table>
-                </div>
-                <div class="total">
-                    <p><b>Total:</b> #${invoice.total_price}</p>
-                </div>
-                <p>For enquiries and complaint contact us at Phone number: (+234) 8139654185, and Email address: Fixtulnigeria@gmail.com or visit our website at <b> www.fixtul.com.</b></p>
-            </div>
-        </body>
-        </html>
-    `
-    // Launch Puppeteer
-    const browser = await puppeteer.launch({
-        headless: true,
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
-    });
-    const page = await browser.newPage();
+    try {
+        const id = req.params.id;
+        const invoice = await salesInvoiceModel.findById(id);
 
-    // Set the content
-    await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
-
-    // Define the PDF path
-    const pdfPath = path.join(__dirname, `${invoice.customer_name}_invoice.pdf`);
-    console.log(pdfPath);
-
-    // Generate PDF and save it to the filesystem
-    await page.pdf({ path: pdfPath, format: 'A4', printBackground: true });
-
-    await browser.close();
-
-    // Serve the PDF file to the client
-    res.download(pdfPath, `${invoice.customer_name}_invoice.pdf`, (err) => {
-        if (err) {
-            console.error('Error sending PDF:', err);
-            res.status(500).send('Failed to send PDF');
+        if (!invoice) {
+            return res.status(404).send('Invoice not found');
         }
 
-        // Optionally, delete the file after sending
-        fs.unlink(pdfPath, (err) => {
-            if (err) console.error('Error deleting PDF:', err);
-        });
-    });
+        // Generate the HTML content dynamically
+        const htmlContent = `
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Invoice</title>
+                <style>
+                    body {
+                        font-family: Arial, sans-serif;
+                    }
+                    .invoice-container {
+                        max-width: 800px;
+                        margin: 0 auto;
+                        padding: 20px;
+                        border: 1px solid #ccc;
+                        background-color: #fff;
+                        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+                    }
+                    .logo {
+                        max-width: 150px;
+                    }
+                    .company-info {
+                        margin-top: 20px;
+                    }
+                    .invoice-info {
+                        margin-top: 30px;
+                        text-align: right;
+                    }
+                    .customer-info {
+                        margin-top: 30px;
+                    }
+                    .table-container {
+                        margin-top: 30px;
+                    }
+                    table {
+                        width: 100%;
+                        border-collapse: collapse;
+                    }
+                    th, td {
+                        border: 1px solid #ccc;
+                        padding: 8px;
+                        text-align: left;
+                    }
+                    th {
+                        background-color: #f2f2f2;
+                    }
+                    .total {
+                        margin-top: 20px;
+                        text-align: right;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="invoice-container">
+                    <div class="logo">
+                        <img src="https://res.cloudinary.com/dtmhv0qae/image/upload/v1724723865/FIXTUL-LOGO_p5k75k.png" alt="Company Logo" height="100">
+                    </div>
+                    <div class="company-info">
+                        <p>Fixtul Nigeria</p>
+                        <p>Alari Akata Complex, <br> Facebook, Under G, <br>210214, Lautech, Ogbomoso, Oyo State</p>
+                    </div>
+                    <div class="invoice-info">
+                        <p><b>Invoice #:</b> ${invoice._id}</p>
+                        <p><b>Date:</b> ${new Date(invoice.date).toLocaleString()}</p>
+                    </div>
+                    <div class="customer-info">
+                        <p><b>Customer Name:</b> ${invoice.customer_name}</p>
+                    </div>
+                    <div class="table-container">
+                        <table>
+                            <tr>
+                                <th scope="col">Product</th>
+                                <th scope="col">Amount</th>
+                                <th scope="col">Quantity</th>
+                            </tr>
+                            ${invoice.products.map(element => `
+                                <tr>
+                                    <td>${element.name}</td>
+                                    <td>${element.price}</td>
+                                    <td>${element.quantity}</td>
+                                </tr>
+                            `).join('')}
+                        </table>
+                    </div>
+                    <div class="total">
+                        <p><b>Total:</b> #${invoice.total_price}</p>
+                    </div>
+                    <p>For enquiries and complaint contact us at Phone number: (+234) 8139654185, and Email address: Fixtulnigeria@gmail.com or visit our website at <b> www.fixtul.com.</b></p>
+                </div>
+            </body>
+            </html>
+        `;
 
-}
+        // Define the PDF path
+        const pdfPath = path.join(__dirname, `${invoice.customer_name}_invoice.pdf`);
+
+        // Create the PDF using html-pdf
+        const options = { format: 'A4', border: '10mm', type: 'pdf' };
+
+        pdf.create(htmlContent, options).toFile(pdfPath, (err, result) => {
+            if (err) {
+                console.error('Error creating PDF:', err);
+                return res.status(500).send('Failed to create PDF');
+            }
+
+            // Serve the PDF file to the client
+            res.download(result.filename, `${invoice.customer_name}_invoice.pdf`, (err) => {
+                if (err) {
+                    console.error('Error sending PDF:', err);
+                    return res.status(500).send('Failed to send PDF');
+                }
+
+                // Optionally, delete the file after sending
+                fs.unlink(result.filename, (err) => {
+                    if (err) console.error('Error deleting PDF:', err);
+                });
+            });
+        });
+
+    } catch (error) {
+        console.error('Error generating invoice:', error);
+        res.status(500).send('Internal Server Error');
+    }
+};
+
 
 module.exports = { addProduct, addSalesInvoice, salesin, salesHistory, invoiceDetails, viewProducts, removeProduct, deleteSalesInvoice, printSalesInvoice }
 

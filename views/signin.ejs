@@ -8,14 +8,18 @@
 
 </head>
 <body>
-    <div class="body2  col-8 col-md-4 m-auto mt-3 shadow-sm p-2 py-4">
+    <div class="body2  col-8 col-md-4 m-auto mt-5 shadow-sm p-2 py-4">
+        <% if (status === false) { %>
+            <p class="alert alert-danger" role="alert"><%= message %></p>
+          <% } %>
         <div class="cart-d-logo">
             <img src="/images/FIXTUL-LOGO.png" alt="#companylogo" height="100">
         </div>
+
         <form action="/user/signin" method="post">
             <div class="mb-3 ">
                 <h4 class="my-3 text-center">Sign in</h4>
-                <input type="email" class="form-control"  placeholder="Email" name="email">
+                <input type="text" class="form-control"  placeholder="Username" name="username">
             </div>
             <div class="mb-3">
                 <input type="password" class="form-control" placeholder="Password" name="password">

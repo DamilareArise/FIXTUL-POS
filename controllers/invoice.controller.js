@@ -1,8 +1,9 @@
 const express = require("express");
-const puppeteer = require("puppeteer");
+const pdf = require('html-pdf');
 const fs = require('fs');
 const path = require('path');
 const invoiceModel = require("../models/invoice.model");
+const jwt = require('jsonwebtoken')
 
 const fixInvoice = (req, res) => {
     invoiceInfo = req.body;
@@ -51,7 +52,9 @@ const invoicePage = (req, res) => {
 };
 
 const homePage = (req, res) => {
+    
     res.render("invoice");
+
 };
 
 const printInvoice = async (req, res) => {
@@ -154,38 +157,31 @@ const printInvoice = async (req, res) => {
             </html>
         `;
 
-        // Launch Puppeteer
-        const browser = await puppeteer.launch({
-            headless: true,
-            args: ['--no-sandbox', '--disable-setuid-sandbox']
-        });
-        const page = await browser.newPage();
-
-        // Set the content
-        await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
-
         // Define the PDF path
         const pdfPath = path.join(__dirname, `${invoice.customer_name}_invoice.pdf`);
-        console.log(pdfPath);
         
-        // Generate PDF and save it to the filesystem
-        await page.pdf({ path: pdfPath, format: 'A4', printBackground: true });
+        // Create the PDF using html-pdf
+        const options = { format: 'A4', border: '10mm', type: "pdf" };
 
-        await browser.close();
-
-        // Serve the PDF file to the client
-        res.download(pdfPath, `${invoice.customer_name}_invoice.pdf`, (err) => {
+        pdf.create(htmlContent, options).toFile(pdfPath, (err, result) => {
             if (err) {
-                console.error('Error sending PDF:', err);
-                res.status(500).send('Failed to send PDF');
+                console.error('Error creating PDF:', err);
+                return res.status(500).send('Failed to create PDF');
             }
 
-            // Optionally, delete the file after sending
-            fs.unlink(pdfPath, (err) => {
-                if (err) console.error('Error deleting PDF:', err);
+            // Serve the PDF file to the client
+            res.download(result.filename, `${invoice.customer_name}_invoice.pdf`, (err) => {
+                if (err) {
+                    console.error('Error sending PDF:', err);
+                    return res.status(500).send('Failed to send PDF');
+                }
+
+                // Optionally, delete the file after sending
+                fs.unlink(result.filename, (err) => {
+                    if (err) console.error('Error deleting PDF:', err);
+                });
             });
         });
-
 
     } catch (error) {
         console.error('Error generating invoice:', error);
